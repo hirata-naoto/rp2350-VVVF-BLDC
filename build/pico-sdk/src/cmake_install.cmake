@@ -204,11 +204,6 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/hardware_rosc/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/hardware_spi/cmake_install.cmake")
 endif()
 
@@ -249,22 +244,12 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/hardware_xip_cache/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/hardware_xosc/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/hardware_powman/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/hardware_psram/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
@@ -289,12 +274,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/boot_bootrom_headers/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/pico_platform_common/cmake_install.cmake")
+  include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/pico_bootrom/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
@@ -315,11 +295,6 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/pico_aon_timer/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/pico_bootrom/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
@@ -374,11 +349,6 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/pico_low_power/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/pico_mem_ops/cmake_install.cmake")
 endif()
 
@@ -395,11 +365,6 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/pico_rand/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/pico_thread_local/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
@@ -439,11 +404,6 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/pico_usb_reset/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/pico_i2c_slave/cmake_install.cmake")
 endif()
 
@@ -464,17 +424,17 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/pico_mbedtls/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/pico_lwip/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/pico_cyw43_arch/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/pico_mbedtls/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
@@ -510,11 +470,6 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/pico_fix/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/pico-sdk/src/rp2_common/pico_status_led/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)

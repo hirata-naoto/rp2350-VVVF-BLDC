@@ -88,29 +88,19 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
     )
 endif()
 
-if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/picotool" TYPE FILE MESSAGE_NEVER FILES "/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/enc_bootloader/enc_bootloader.elf")
-endif()
-
-if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/picotool" TYPE FILE MESSAGE_NEVER RENAME "enc_bootloader_mbedtls.elf" FILES "/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/enc_bootloader_mbedtls/enc_bootloader.elf")
-endif()
-
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/lib/cmake_install.cmake")
-  include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/model/cmake_install.cmake")
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/errors/cmake_install.cmake")
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/picoboot_connection/cmake_install.cmake")
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/elf/cmake_install.cmake")
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/elf2uf2/cmake_install.cmake")
+  include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/lib/cmake_install.cmake")
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/bintool/cmake_install.cmake")
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/pico_binary_info/cmake_install.cmake")
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/boot_uf2_headers/cmake_install.cmake")
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/boot_picoboot_headers/cmake_install.cmake")
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/boot_picobin_headers/cmake_install.cmake")
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/pico_usb_reset_interface_headers/cmake_install.cmake")
-  include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/boot_bootrom_headers/cmake_install.cmake")
   include("/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/pico_platform/cmake_install.cmake")
 
 endif()

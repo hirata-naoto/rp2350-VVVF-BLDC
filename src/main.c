@@ -149,7 +149,12 @@ int main(void) {
     pwm_setup();
 
     struct repeating_timer timer;
-    add_repeating_timer_us(-(int)(CONTROL_PERIOD_S * 1000000.0f), control_cb, NULL, &timer);
+    if (!add_repeating_timer_us(-(int)(CONTROL_PERIOD_S * 1000000.0f), control_cb, NULL, &timer)) {
+        while (true) {
+            gpio_put(PIN_DRV_NSLEEP, 0);
+            sleep_ms(250);
+        }
+    }
 
     while (true) {
         sleep_ms(100);

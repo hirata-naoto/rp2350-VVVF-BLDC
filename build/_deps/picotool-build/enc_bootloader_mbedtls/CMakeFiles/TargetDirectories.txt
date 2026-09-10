@@ -1,2 +1,0 @@
-/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/enc_bootloader_mbedtls/CMakeFiles/edit_cache.dir
-/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-build/enc_bootloader_mbedtls/CMakeFiles/rebuild_cache.dir

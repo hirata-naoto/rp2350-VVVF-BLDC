@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.13)
 
 set(PICO_PLATFORM rp2350-arm-s)
 set(PICO_BOARD pico2)
-set(PICO_COMPILER pico_arm_cortex_m33_gcc)
+if (NOT DEFINED PICO_COMPILER)
+    set(PICO_COMPILER pico_arm_cortex_m33_gcc)
+endif ()
 
 include(pico_sdk_import.cmake)
 

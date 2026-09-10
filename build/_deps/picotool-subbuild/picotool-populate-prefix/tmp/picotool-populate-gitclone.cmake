@@ -36,7 +36,7 @@ set(number_of_tries 0)
 while(error_code AND number_of_tries LESS 3)
   execute_process(
     COMMAND "/usr/bin/git"
-            clone --no-checkout --config "advice.detachedHead=false" "https://github.com/raspberrypi/picotool.git" "picotool-src"
+            clone --no-checkout --progress --config "advice.detachedHead=false" "https://github.com/raspberrypi/picotool.git" "picotool-src"
     WORKING_DIRECTORY "/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps"
     RESULT_VARIABLE error_code
     ${maybe_show_command}
@@ -52,13 +52,13 @@ endif()
 
 execute_process(
   COMMAND "/usr/bin/git"
-          checkout "2.3.1" --
+          checkout "2.0.0" --
   WORKING_DIRECTORY "/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/picotool-src"
   RESULT_VARIABLE error_code
   ${maybe_show_command}
 )
 if(error_code)
-  message(FATAL_ERROR "Failed to checkout tag: '2.3.1'")
+  message(FATAL_ERROR "Failed to checkout tag: '2.0.0'")
 endif()
 
 set(init_submodules TRUE)
