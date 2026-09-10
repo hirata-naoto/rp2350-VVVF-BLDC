@@ -153,7 +153,7 @@ fn carrier_target_hz(elec_freq_hz: f32, time_s: f32) -> f32 {
     } else if elec_freq_hz < CARRIER_MID_HIGH_MAX_FREQ_HZ {
         elec_freq_hz * 5.0
     } else {
-        (elec_freq_hz * 3.0).max(CARRIER_MID_HIGH_MAX_FREQ_HZ * 5.0)
+        elec_freq_hz * 3.0
     };
     clampf(carrier, CARRIER_MIN_HZ, CARRIER_MAX_HZ)
 }
