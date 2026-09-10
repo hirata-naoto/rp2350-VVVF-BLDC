@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.13)
 
 include(pico_sdk_import.cmake)
 
+set(PICO_PLATFORM rp2350)
+set(PICO_BOARD pico2)
+
 project(rp2350_vvvf_bldc C CXX ASM)
 
 set(CMAKE_C_STANDARD 11)
