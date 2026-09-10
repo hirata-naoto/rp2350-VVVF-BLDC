@@ -37,6 +37,14 @@ elf2uf2-rs target/thumbv8m.main-none-eabihf/release/rp2350-vvvf-bldc rp2350-vvvf
 生成物は `target/thumbv8m.main-none-eabihf/release/rp2350-vvvf-bldc` です。  
 生成した `rp2350-vvvf-bldc.uf2` を書き込んでください。
 
+## デバッグ出力
+
+`defmt-rtt` でRTTログを出すようにしてあります。起動時、マスコン帯域の切替、ドライバのスリープ/復帰、キャリアモード遷移、定期テレメトリを出力します。
+
+```bash
+probe-rs run --chip RP2350 target/thumbv8m.main-none-eabihf/release/rp2350-vvvf-bldc
+```
+
 ## 動作概要
 
 - 20kHz PWMで3相正弦波を生成
