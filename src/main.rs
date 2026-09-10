@@ -105,11 +105,13 @@ fn default_pwm_config() -> PwmConfig {
 
 fn pwm_wrap(sys_hz: u32, pwm_freq_hz: f32, divider: f32) -> u16 {
     let wrap = (sys_hz as f32 / (divider * pwm_freq_hz) - 1.0) as i32;
-    wrap.clamp(1000, 65535) as u16
+    wrap.clamp(0, 65535) as u16
 }
 
 fn duty_to_counts(duty: f32, top: u16) -> u16 {
-    (duty * top as f32) as u16
+    let max = u32::from(top) + 1;
+    let value = (duty * max as f32) as u32;
+    value.min(u32::from(top)) as u16
 }
 
 fn mascon_read_norm(raw: u16) -> f32 {

@@ -30,10 +30,12 @@ Rust + Embassyでビルドします。
 ```bash
 rustup target add thumbv8m.main-none-eabihf
 cargo build --release
+cargo install elf2uf2-rs
+elf2uf2-rs target/thumbv8m.main-none-eabihf/release/rp2350-vvvf-bldc rp2350-vvvf-bldc.uf2
 ```
 
 生成物は `target/thumbv8m.main-none-eabihf/release/rp2350-vvvf-bldc` です。  
-UF2化して書き込むか、デバッガ経由で書き込んでください。
+生成した `rp2350-vvvf-bldc.uf2` を書き込んでください。
 
 ## 動作概要
 
