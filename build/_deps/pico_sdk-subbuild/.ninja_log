@@ -1,0 +1,21 @@
+# ninja log v7
+0	5	1789041797367985915	pico_sdk-populate-prefix/src/pico_sdk-populate-stamp/pico_sdk-populate-mkdir	c3bfbce97f3b9589
+0	5	1789041797367985915	/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/pico_sdk-subbuild/pico_sdk-populate-prefix/src/pico_sdk-populate-stamp/pico_sdk-populate-mkdir	c3bfbce97f3b9589
+5	39970	1789041837333133884	pico_sdk-populate-prefix/src/pico_sdk-populate-stamp/pico_sdk-populate-download	46661d0bdc4260f7
+5	39970	1789041837333133884	/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/pico_sdk-subbuild/pico_sdk-populate-prefix/src/pico_sdk-populate-stamp/pico_sdk-populate-download	46661d0bdc4260f7
+39970	41275	1789041837334133894	pico_sdk-populate-prefix/src/pico_sdk-populate-stamp/pico_sdk-populate-update	85ff84e6fe4072ce
+39970	41275	1789041837334133894	/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/pico_sdk-subbuild/pico_sdk-populate-prefix/src/pico_sdk-populate-stamp/pico_sdk-populate-update	85ff84e6fe4072ce
+41275	41279	1789041838643146167	pico_sdk-populate-prefix/src/pico_sdk-populate-stamp/pico_sdk-populate-patch	526406ada417d22e
+41275	41279	1789041838643146167	/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/pico_sdk-subbuild/pico_sdk-populate-prefix/src/pico_sdk-populate-stamp/pico_sdk-populate-patch	526406ada417d22e
+41279	41283	1789041838647146204	pico_sdk-populate-prefix/src/pico_sdk-populate-stamp/pico_sdk-populate-configure	d274239a150a7cc5
+41279	41283	1789041838647146204	/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/pico_sdk-subbuild/pico_sdk-populate-prefix/src/pico_sdk-populate-stamp/pico_sdk-populate-configure	d274239a150a7cc5
+41283	41287	1789041838652184580	pico_sdk-populate-prefix/src/pico_sdk-populate-stamp/pico_sdk-populate-build	19d0c00de99cfdd
+41283	41287	1789041838652184580	/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/pico_sdk-subbuild/pico_sdk-populate-prefix/src/pico_sdk-populate-stamp/pico_sdk-populate-build	19d0c00de99cfdd
+41287	41291	1789041838654146270	pico_sdk-populate-prefix/src/pico_sdk-populate-stamp/pico_sdk-populate-install	6ff536ae6363d6e
+41287	41291	1789041838654146270	/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/pico_sdk-subbuild/pico_sdk-populate-prefix/src/pico_sdk-populate-stamp/pico_sdk-populate-install	6ff536ae6363d6e
+41291	41295	1789041838658146307	pico_sdk-populate-prefix/src/pico_sdk-populate-stamp/pico_sdk-populate-test	4e337a90b3412c4b
+41291	41295	1789041838658146307	/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/pico_sdk-subbuild/pico_sdk-populate-prefix/src/pico_sdk-populate-stamp/pico_sdk-populate-test	4e337a90b3412c4b
+41295	41300	1789041838664146364	CMakeFiles/pico_sdk-populate-complete	dc105e6353d86e87
+41295	41300	1789041838664146364	pico_sdk-populate-prefix/src/pico_sdk-populate-stamp/pico_sdk-populate-done	dc105e6353d86e87
+41295	41300	1789041838664146364	/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/pico_sdk-subbuild/CMakeFiles/pico_sdk-populate-complete	dc105e6353d86e87
+41295	41300	1789041838664146364	/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/pico_sdk-subbuild/pico_sdk-populate-prefix/src/pico_sdk-populate-stamp/pico_sdk-populate-done	dc105e6353d86e87
