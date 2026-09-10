@@ -8,14 +8,28 @@ use embassy_rp::clocks::clk_sys_freq;
 use embassy_rp::gpio::{Level, Output, Pull};
 use embassy_rp::pwm::{Config as PwmConfig, Pwm};
 use embassy_time::{Duration, Ticker};
-use libm::{floorf, fmodf, sinf};
+use libm::{ceilf, floorf, fmodf, sinf};
 use panic_halt as _;
 
-const PWM_FREQ_HZ: f32 = 20_000.0;
+const INITIAL_CARRIER_FREQ_HZ: f32 = 20_000.0;
 const CONTROL_PERIOD_S: f32 = 0.0001;
 const CONTROL_PERIOD_US: u64 = 100;
 const MAX_ELEC_FREQ_HZ: f32 = 380.0;
 const FREQ_SLEW_HZ_PER_S: f32 = 260.0;
+const CARRIER_SLEW_HZ_PER_S: f32 = 22_000.0;
+
+const COMMAND_LPF_ALPHA: f32 = 0.04;
+const STOP_ZONE_MAX: f32 = 0.18;
+const POWER_ZONE_MIN: f32 = 0.42;
+
+const CARRIER_LOW_MAX_FREQ_HZ: f32 = 35.0;
+const CARRIER_MID_LOW_MAX_FREQ_HZ: f32 = 95.0;
+const CARRIER_MID_HIGH_MAX_FREQ_HZ: f32 = 180.0;
+const CARRIER_ASYNC_BASE_HZ: f32 = 2_400.0;
+const CARRIER_ASYNC_WOBBLE_HZ: f32 = 160.0;
+const CARRIER_ASYNC_WOBBLE_FREQ_HZ: f32 = 7.0;
+const CARRIER_MIN_HZ: f32 = 400.0;
+const CARRIER_MAX_HZ: f32 = 20_000.0;
 
 const TWO_PI: f32 = 2.0 * core::f32::consts::PI;
 
@@ -44,6 +58,7 @@ async fn main(_spawner: Spawner) {
     let mut elec_freq_hz = 0.0f32;
     let mut elec_theta = 0.0f32;
     let mut vvvf_clock_s = 0.0f32;
+    let mut carrier_freq_hz = INITIAL_CARRIER_FREQ_HZ;
 
     let mut ticker = Ticker::every(Duration::from_micros(CONTROL_PERIOD_US));
 
@@ -51,14 +66,14 @@ async fn main(_spawner: Spawner) {
         ticker.next().await;
 
         let command = mascon_read_norm(adc.read(&mut mascon).await.unwrap_or(0));
-        command_filtered += (command - command_filtered) * 0.04;
+        command_filtered += (command - command_filtered) * COMMAND_LPF_ALPHA;
 
-        let target_freq = command_filtered * MAX_ELEC_FREQ_HZ;
+        let target_freq = command_target_freq(command_filtered, elec_freq_hz);
         let max_step = FREQ_SLEW_HZ_PER_S * CONTROL_PERIOD_S;
         let df = clampf(target_freq - elec_freq_hz, -max_step, max_step);
         elec_freq_hz = clampf(elec_freq_hz + df, 0.0, MAX_ELEC_FREQ_HZ);
 
-        if command_filtered < 0.02 && elec_freq_hz < 0.5 {
+        if command_filtered <= STOP_ZONE_MAX && elec_freq_hz < 0.5 {
             drv_nsleep.set_low();
             pwm_uv_cfg.compare_a = 0;
             pwm_uv_cfg.compare_b = 0;
@@ -70,6 +85,21 @@ async fn main(_spawner: Spawner) {
 
         drv_nsleep.set_high();
         vvvf_clock_s += CONTROL_PERIOD_S;
+
+        let target_carrier_hz = carrier_target_hz(elec_freq_hz, vvvf_clock_s);
+        let carrier_max_step = CARRIER_SLEW_HZ_PER_S * CONTROL_PERIOD_S;
+        let d_carrier = clampf(
+            target_carrier_hz - carrier_freq_hz,
+            -carrier_max_step,
+            carrier_max_step,
+        );
+        carrier_freq_hz = clampf(carrier_freq_hz + d_carrier, CARRIER_MIN_HZ, CARRIER_MAX_HZ);
+
+        let (divider, top) = pwm_params(clk_sys_freq(), carrier_freq_hz);
+        pwm_uv_cfg.divider = divider.into();
+        pwm_w_cfg.divider = divider.into();
+        pwm_uv_cfg.top = top;
+        pwm_w_cfg.top = top;
 
         elec_theta += TWO_PI * elec_freq_hz * CONTROL_PERIOD_S;
         if elec_theta >= TWO_PI {
@@ -97,10 +127,43 @@ async fn main(_spawner: Spawner) {
 fn default_pwm_config() -> PwmConfig {
     let mut cfg = PwmConfig::default();
     cfg.divider = 1u8.into();
-    cfg.top = pwm_wrap(clk_sys_freq(), PWM_FREQ_HZ, 1.0);
+    cfg.top = pwm_wrap(clk_sys_freq(), INITIAL_CARRIER_FREQ_HZ, 1.0);
     cfg.compare_a = cfg.top / 2;
     cfg.compare_b = cfg.top / 2;
     cfg
+}
+
+fn command_target_freq(command: f32, current_freq_hz: f32) -> f32 {
+    if command <= STOP_ZONE_MAX {
+        0.0
+    } else if command >= POWER_ZONE_MIN {
+        let accel = clampf((command - POWER_ZONE_MIN) / (1.0 - POWER_ZONE_MIN), 0.0, 1.0);
+        accel * MAX_ELEC_FREQ_HZ
+    } else {
+        current_freq_hz
+    }
+}
+
+fn carrier_target_hz(elec_freq_hz: f32, time_s: f32) -> f32 {
+    let carrier = if elec_freq_hz < CARRIER_LOW_MAX_FREQ_HZ {
+        CARRIER_ASYNC_BASE_HZ
+            + CARRIER_ASYNC_WOBBLE_HZ * sinf(TWO_PI * CARRIER_ASYNC_WOBBLE_FREQ_HZ * time_s)
+    } else if elec_freq_hz < CARRIER_MID_LOW_MAX_FREQ_HZ {
+        elec_freq_hz * 9.0
+    } else if elec_freq_hz < CARRIER_MID_HIGH_MAX_FREQ_HZ {
+        elec_freq_hz * 5.0
+    } else {
+        (elec_freq_hz * 3.0).max(CARRIER_MID_HIGH_MAX_FREQ_HZ * 5.0)
+    };
+    clampf(carrier, CARRIER_MIN_HZ, CARRIER_MAX_HZ)
+}
+
+fn pwm_params(sys_hz: u32, carrier_hz: f32) -> (u8, u16) {
+    let carrier_hz = clampf(carrier_hz, CARRIER_MIN_HZ, CARRIER_MAX_HZ);
+    let divider = ceilf((sys_hz as f32) / (carrier_hz * 65536.0)) as i32;
+    let divider = divider.clamp(1, 255) as u8;
+    let top = pwm_wrap(sys_hz, carrier_hz, divider as f32);
+    (divider, top)
 }
 
 fn pwm_wrap(sys_hz: u32, pwm_freq_hz: f32, divider: f32) -> u16 {
