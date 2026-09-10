@@ -140,7 +140,11 @@ fn command_target_freq(command: f32, current_freq_hz: f32) -> f32 {
         let launch = clampf((command - STOP_ZONE_MAX) / (1.0 - STOP_ZONE_MAX), 0.0, 1.0);
         launch * MAX_ELEC_FREQ_HZ
     } else if command >= POWER_ZONE_MIN {
-        let accel = clampf((command - POWER_ZONE_MIN) / (1.0 - POWER_ZONE_MIN), 0.0, 1.0);
+        let accel = clampf(
+            (command - POWER_ZONE_MIN) / (1.0 - POWER_ZONE_MIN),
+            0.0,
+            1.0,
+        );
         accel * MAX_ELEC_FREQ_HZ
     } else {
         current_freq_hz
