@@ -1,0 +1,1 @@
+cmd='/usr/local/bin/cmake;-DCMAKE_MAKE_PROGRAM:FILEPATH=/usr/local/bin/ninja;-DPICO_SDK_PATH:FILEPATH=/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/pico_sdk-src;-DUSE_PRECOMPILED:BOOL=true;-DUSE_MBEDTLS=1;-DPICO_DEBUG_INFO_IN_RELEASE=OFF;-GNinja;-S;<SOURCE_DIR><SOURCE_SUBDIR>;-B;<BINARY_DIR>'
