@@ -25,16 +25,15 @@ RP2350 + DRV8313 + アウトランナーBLDCで、電車のVVVFインバータ�
 
 ## ビルド
 
-Pico SDKをセットアップ済みとして:
+Rust + Embassyでビルドします。
 
 ```bash
-mkdir build
-cd build
-cmake ..
-cmake --build .
+rustup target add thumbv8m.main-none-eabihf
+cargo build --release
 ```
 
-生成されたUF2/ELFを書き込みます。
+生成物は `target/thumbv8m.main-none-eabihf/release/rp2350-vvvf-bldc` です。  
+UF2化して書き込むか、デバッガ経由で書き込んでください。
 
 ## 動作概要
 
