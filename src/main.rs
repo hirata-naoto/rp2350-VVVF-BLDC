@@ -1,6 +1,8 @@
 #![no_std]
 #![no_main]
 
+use defmt::{debug, info, warn};
+use defmt_rtt as _;
 use embassy_executor::Spawner;
 use embassy_rp::adc::{Adc, Channel, Config as AdcConfig, InterruptHandler};
 use embassy_rp::bind_interrupts;
@@ -9,7 +11,7 @@ use embassy_rp::gpio::{Level, Output, Pull};
 use embassy_rp::pwm::{Config as PwmConfig, Pwm};
 use embassy_time::{Duration, Ticker};
 use libm::{ceilf, floorf, fmodf, sinf};
-use panic_halt as _;
+use panic_probe as _;
 
 const INITIAL_CARRIER_FREQ_HZ: f32 = 20_000.0;
 const CONTROL_PERIOD_S: f32 = 0.0001;
@@ -31,8 +33,24 @@ const CARRIER_ASYNC_WOBBLE_HZ: f32 = 160.0;
 const CARRIER_ASYNC_WOBBLE_FREQ_HZ: f32 = 7.0;
 const CARRIER_MIN_HZ: f32 = 400.0;
 const CARRIER_MAX_HZ: f32 = 20_000.0;
+const TELEMETRY_INTERVAL_TICKS: u32 = 5_000;
 
 const TWO_PI: f32 = 2.0 * core::f32::consts::PI;
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum CommandZone {
+    Stop,
+    Coast,
+    Power,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum CarrierMode {
+    Async,
+    Pulse9,
+    Pulse5,
+    Pulse3,
+}
 
 bind_interrupts!(
     struct Irqs {
@@ -44,6 +62,7 @@ bind_interrupts!(
 async fn main(_spawner: Spawner) {
     // RP2350周辺を初期化し、VVVF制御に使うI/Oを確保する。
     let p = embassy_rp::init(Default::default());
+    info!("boot sys_hz={=u32}", clk_sys_freq());
 
     // DRV8313のnSLEEP。停止時はLowでゲート駆動を止めて待機電力と発熱を抑える。
     let mut drv_nsleep = Output::new(p.PIN_5, Level::Low);
@@ -64,16 +83,36 @@ async fn main(_spawner: Spawner) {
     let mut elec_theta = 0.0f32;
     let mut vvvf_clock_s = 0.0f32;
     let mut carrier_freq_hz = INITIAL_CARRIER_FREQ_HZ;
+    let mut tick_count = 0u32;
+    let mut driver_awake = false;
+    let mut last_zone = CommandZone::Stop;
+    let mut last_carrier_mode = carrier_mode_for_freq(elec_freq_hz);
 
     // 100usごと(10kHz)に制御を更新する固定周期ループ。
     let mut ticker = Ticker::every(Duration::from_micros(CONTROL_PERIOD_US));
 
     loop {
         ticker.next().await;
+        tick_count = tick_count.wrapping_add(1);
 
         // 生ADC値を0.0..1.0へ正規化し、一次LPFでガタつきを抑える。
-        let command = mascon_read_norm(adc.read(&mut mascon).await.unwrap_or(0));
+        let command = match adc.read(&mut mascon).await {
+            Ok(raw) => mascon_read_norm(raw),
+            Err(_) => {
+                warn!("adc read error");
+                0.0
+            }
+        };
         command_filtered += (command - command_filtered) * COMMAND_LPF_ALPHA;
+        let zone = command_zone(command_filtered);
+        if zone != last_zone {
+            info!(
+                "zone={=str} cmd_milli={=u16}",
+                command_zone_name(zone),
+                scale_unit(command_filtered)
+            );
+            last_zone = zone;
+        }
 
         // マスコン帯域(停止/惰行/力行)から目標電気角周波数を決め、
         // 変化率を制限して急加減速による音と電流の暴れを抑える。
@@ -84,6 +123,10 @@ async fn main(_spawner: Spawner) {
 
         // 停止帯かつ十分低速ならドライバをスリープさせ、PWM出力を全相ゼロにする。
         if command_filtered <= STOP_ZONE_MAX && elec_freq_hz < 0.5 {
+            if driver_awake {
+                info!("driver=sleep");
+                driver_awake = false;
+            }
             drv_nsleep.set_low();
             pwm_uv_cfg.compare_a = 0;
             pwm_uv_cfg.compare_b = 0;
@@ -93,6 +136,10 @@ async fn main(_spawner: Spawner) {
             continue;
         }
 
+        if !driver_awake {
+            info!("driver=awake");
+            driver_awake = true;
+        }
         drv_nsleep.set_high();
         vvvf_clock_s += CONTROL_PERIOD_S;
 
@@ -106,6 +153,15 @@ async fn main(_spawner: Spawner) {
             carrier_max_step,
         );
         carrier_freq_hz = clampf(carrier_freq_hz + d_carrier, CARRIER_MIN_HZ, CARRIER_MAX_HZ);
+        let carrier_mode = carrier_mode_for_freq(elec_freq_hz);
+        if carrier_mode != last_carrier_mode {
+            info!(
+                "carrier={=str} elec_centi_hz={=u16}",
+                carrier_mode_name(carrier_mode),
+                scale_hz(elec_freq_hz)
+            );
+            last_carrier_mode = carrier_mode;
+        }
 
         let (divider, top) = pwm_params(clk_sys_freq(), carrier_freq_hz);
         pwm_uv_cfg.divider = divider.into();
@@ -135,6 +191,15 @@ async fn main(_spawner: Spawner) {
 
         pwm_uv.set_config(&pwm_uv_cfg);
         pwm_w.set_config(&pwm_w_cfg);
+
+        if tick_count % TELEMETRY_INTERVAL_TICKS == 0 {
+            debug!(
+                "telemetry cmd_milli={=u16} elec_centi_hz={=u16} carrier_hz={=u16}",
+                scale_unit(command_filtered),
+                scale_hz(elec_freq_hz),
+                carrier_freq_hz as u16
+            );
+        }
     }
 }
 
@@ -173,6 +238,24 @@ fn command_target_freq(command: f32, current_freq_hz: f32) -> f32 {
     }
 }
 
+fn command_zone(command: f32) -> CommandZone {
+    if command <= STOP_ZONE_MAX {
+        CommandZone::Stop
+    } else if command < POWER_ZONE_MIN {
+        CommandZone::Coast
+    } else {
+        CommandZone::Power
+    }
+}
+
+fn command_zone_name(zone: CommandZone) -> &'static str {
+    match zone {
+        CommandZone::Stop => "stop",
+        CommandZone::Coast => "coast",
+        CommandZone::Power => "power",
+    }
+}
+
 fn carrier_target_hz(elec_freq_hz: f32, time_s: f32) -> f32 {
     // 低周波は非同期キャリア+軽い揺らぎで「ブーン」を作り、
     // 速度が上がると9倍/5倍/3倍の同期寄りパターンへ段階遷移させる。
@@ -187,6 +270,27 @@ fn carrier_target_hz(elec_freq_hz: f32, time_s: f32) -> f32 {
         elec_freq_hz * 3.0
     };
     clampf(carrier, CARRIER_MIN_HZ, CARRIER_MAX_HZ)
+}
+
+fn carrier_mode_for_freq(elec_freq_hz: f32) -> CarrierMode {
+    if elec_freq_hz < CARRIER_LOW_MAX_FREQ_HZ {
+        CarrierMode::Async
+    } else if elec_freq_hz < CARRIER_MID_LOW_MAX_FREQ_HZ {
+        CarrierMode::Pulse9
+    } else if elec_freq_hz < CARRIER_MID_HIGH_MAX_FREQ_HZ {
+        CarrierMode::Pulse5
+    } else {
+        CarrierMode::Pulse3
+    }
+}
+
+fn carrier_mode_name(mode: CarrierMode) -> &'static str {
+    match mode {
+        CarrierMode::Async => "async",
+        CarrierMode::Pulse9 => "9x",
+        CarrierMode::Pulse5 => "5x",
+        CarrierMode::Pulse3 => "3x",
+    }
 }
 
 fn pwm_params(sys_hz: u32, carrier_hz: f32) -> (u8, u16) {
@@ -243,4 +347,12 @@ fn clampf(v: f32, lo: f32, hi: f32) -> f32 {
     } else {
         v
     }
+}
+
+fn scale_unit(v: f32) -> u16 {
+    (clampf(v, 0.0, 1.0) * 1000.0) as u16
+}
+
+fn scale_hz(v: f32) -> u16 {
+    clampf(v * 100.0, 0.0, u16::MAX as f32) as u16
 }
