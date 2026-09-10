@@ -1,0 +1,3 @@
+/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/pico_sdk-subbuild/CMakeFiles/pico_sdk-populate.dir
+/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/pico_sdk-subbuild/CMakeFiles/edit_cache.dir
+/home/runner/work/rp2350-VVVF-BLDC/rp2350-VVVF-BLDC/build/_deps/pico_sdk-subbuild/CMakeFiles/rebuild_cache.dir
