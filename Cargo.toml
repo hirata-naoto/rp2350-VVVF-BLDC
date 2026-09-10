@@ -1,0 +1,18 @@
+[package]
+name = "rp2350-vvvf-bldc"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+embassy-executor = { version = "0.10", features = ["platform-cortex-m", "executor-thread"] }
+embassy-rp = { version = "0.10", features = ["rp235xa", "time-driver", "critical-section-impl", "executor-thread"] }
+embassy-time = "0.5"
+libm = "0.2"
+panic-halt = "1"
+cortex-m-rt = "0.7"
+
+[profile.release]
+lto = true
+opt-level = "s"
+codegen-units = 1
+debug = 2
