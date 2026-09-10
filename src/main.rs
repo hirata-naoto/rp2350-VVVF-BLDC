@@ -21,6 +21,7 @@ const CARRIER_SLEW_HZ_PER_S: f32 = 22_000.0;
 const COMMAND_LPF_ALPHA: f32 = 0.04;
 const STOP_ZONE_MAX: f32 = 0.18;
 const POWER_ZONE_MIN: f32 = 0.42;
+const HOLD_ZONE_LAUNCH_FREQ_HZ: f32 = 8.0;
 
 const CARRIER_LOW_MAX_FREQ_HZ: f32 = 35.0;
 const CARRIER_MID_LOW_MAX_FREQ_HZ: f32 = 95.0;
@@ -136,9 +137,12 @@ fn default_pwm_config() -> PwmConfig {
 fn command_target_freq(command: f32, current_freq_hz: f32) -> f32 {
     if command <= STOP_ZONE_MAX {
         0.0
-    } else if current_freq_hz < 0.5 {
-        let launch = clampf((command - STOP_ZONE_MAX) / (1.0 - STOP_ZONE_MAX), 0.0, 1.0);
-        launch * MAX_ELEC_FREQ_HZ
+    } else if command < POWER_ZONE_MIN {
+        if current_freq_hz < HOLD_ZONE_LAUNCH_FREQ_HZ {
+            HOLD_ZONE_LAUNCH_FREQ_HZ
+        } else {
+            current_freq_hz
+        }
     } else if command >= POWER_ZONE_MIN {
         let accel = clampf(
             (command - POWER_ZONE_MIN) / (1.0 - POWER_ZONE_MIN),
