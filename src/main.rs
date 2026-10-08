@@ -85,7 +85,7 @@ async fn main(_spawner: Spawner) {
     // PWMや入力値の準備が整うまでモーター側へ駆動信号が出ないようにする。
     let mut drv_nsleep = Output::new(p.PIN_5, Level::Low);
 
-    // GP26(ADC0)からマスコン用ボリュームの電圧を読み取る。外部プル抵抗は設定しない。
+    // GP26(ADC0)からマスコン用ボリュームの電圧を読み取る。GPIO内部プル抵抗は無効にする。
     let mut adc = Adc::new(p.ADC, Irqs, AdcConfig::default());
     let mut mascon = Channel::new_pin(p.PIN_26, Pull::None);
 
